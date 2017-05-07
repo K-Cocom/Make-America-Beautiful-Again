@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<meta charset="utf-8">
+<title>Street View side-by-side</title>
+<style>
+html, body {
+	height: 80%;
+	margin: 0;
+	padding: 0;
+}
+#pano {
+	float: left;
+	height: 100%;
+	width: 75%;
+}
+	
+#map {
+	float: left;
+	height: 100%;
+	width: 25%;
+}	
+button {
+	height: 50px;
+	width: 150px;
+	margin: 50px;
+	display: inline-block;
+}
+.buttons {
+	margin: auto;
+}
+</style>
+</head>
+<body>
+<h1 align="center">DreamTeam project - Make America Beautiful Again</h1>
+<div id="pano"></div>
+<div id="map"></div>
+<br>
+
+  <form  target="_blank" class="buttons" method = "post" action="getrating.php">
+	  <button type="submit" onClick="buttonClicked(1)" name="button" class="btn btn-outline-primary" value="1">Level 1</button>
+	  <button type="submit" onClick="buttonClicked(2)" name="button" class="btn btn-outline-success" value="2">Level 2</button>
+	  <button type="submit" onClick="buttonClicked(3)" name="button" class="btn btn-outline-warning" value="3">Level 3</button>
+	  <button type="submit" onClick="buttonClicked(4)" name="button" class="btn btn-outline-danger" value="4">Level 4</button>
+	  <input type="hidden" name="position" id="form-position" value="" />
+	  <input type="hidden" name="heading" id="form-heading" value="" />
+	  <input type="hidden" name="pitch" id="form-pitch" value="" />
+	  <input type="hidden" name="pano" id="form-pano" value="" />
+	  <input type="hidden" name="url" id="form-url" value="" />
+</form>
+  
+  
+   <p><a id="myLink" target="_blank" href="#">&nbsp;</a></p>
+<script>
+	var position
+	var pitch
+	var heading
+	var zoom
+      function initialize() {
+        var fenway = {lat: 40.7249807, lng: -73.9993409};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          center: fenway,
+          zoom: 14
+        });
+        var panorama = new google.maps.StreetViewPanorama(
+            document.getElementById('pano'), {
+              position: fenway,
+              pov: {
+                heading: 34,
+                pitch: 10
+              }
+            });
+        map.setStreetView(panorama);
+		  
+		  panorama.addListener('pano_changed', function() {
+position = String(panorama.getPosition());
+			position = position.replace("(", "");
+			position = position.replace(")", "");
+			pitch = panorama.getPov().pitch
+			heading = panorama.getPov().heading
+			zoom = 180 / Math.pow(2,panorama.getPov().zoom)
+        });
+
+        panorama.addListener('links_changed', function() {
+position = String(panorama.getPosition());
+			position = position.replace("(", "");
+			position = position.replace(")", "");
+			pitch = panorama.getPov().pitch
+			heading = panorama.getPov().heading
+			zoom = 180 / Math.pow(2,panorama.getPov().zoom)
+        });
+
+        panorama.addListener('position_changed', function() {
+position = String(panorama.getPosition());
+			position = position.replace("(", "");
+			position = position.replace(")", "");
+			pitch = panorama.getPov().pitch
+			heading = panorama.getPov().heading
+			zoom = 180 / Math.pow(2,panorama.getPov().zoom)
+        });
+
+		  
+        panorama.addListener('pov_changed', function() {
+			position = String(panorama.getPosition());
+			position = position.replace("(", "");
+			position = position.replace(")", "");
+			pitch = panorama.getPov().pitch
+			heading = panorama.getPov().heading
+			zoom = 180 / Math.pow(2,panorama.getPov().zoom)
+        });
+		  
+	  }
+	
+	function buttonClicked(level){
+		var theLink = "https://maps.googleapis.com/maps/api/streetview?size=800x800&location=" + position + "&fov="+ zoom+"&heading="+heading+"&pitch="+pitch+"&key=AIzaSyAn2dieZrN4kDWZh6PhDJBi9VRfr-h39as";
+		var myLink = document.getElementById('myLink');
+        myLink.firstChild.nodeValue = "Level " + level + " trash was found." 
+		myLink.href = theLink;
+		
+		document.getElementById('form-url').value = theLink;
+		document.getElementById('form-position').value = position
+		document.getElementById('form-heading').value = heading;
+		document.getElementById('form-pitch').value = pitch;
+	}
+	
+    </script> 
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA7cJjb-lHjOrxuiRtFP7hjbfmiLlp10Zk&callback=initialize">
+    </script>
+</body>
+</html>
